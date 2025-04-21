@@ -1,32 +1,131 @@
-# Prerequisites
-*.d
+#include <iostream>
+#include <vector>
+using namespace std;
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+class Car {
+protected:
+    string marka;
+    string model;
+    int speed;
 
-# Precompiled Headers
-*.gch
-*.pch
+public:
+    Car(string marka, string model, int speed)
+        : marka(marka), model(model), speed(speed) {
+    }
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+    virtual void printInfo() const {
+        cout << "Marka: " << marka << ", Model: " << model << ", Speed: " << speed;
+    }
 
-# Fortran module files
-*.mod
-*.smod
+    virtual ~Car() {}
+};
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+class Lada : public Car {
+public:
+    Lada(string marka, string model, int speed)
+        : Car(marka, model, speed) {
+    }
 
-# Executables
-*.exe
-*.out
-*.app
+    void printInfo() const override {
+        cout << "LADA -> ";
+        Car::printInfo();
+        cout << endl;
+    }
+};
+
+class Bmw : public Car {
+    bool isSport;
+
+public:
+    Bmw(string marka, string model, int speed, bool isSport)
+        : Car(marka, model, speed), isSport(isSport) {
+    }
+
+    void printInfo() const override {
+        cout << "BMW -> ";
+        Car::printInfo();
+        cout << ", IsSport: " << (isSport ? "Yes" : "No") << endl;
+    }
+};
+
+class Toyota : public Car {
+    bool isSpoiler;
+
+public:
+    Toyota(string marka, string model, int speed, bool isSpoiler)
+        : Car(marka, model, speed), isSpoiler(isSpoiler) {
+    }
+
+    void printInfo() const override {
+        cout << "Toyota -> ";
+        Car::printInfo();
+        cout << ", HasSpoiler: " << (isSpoiler) << endl;
+    }
+};
+
+class CarGallery {
+    vector<Car*> cars; 
+public:
+    void addCar(Car* car) {
+        cars.push_back(car);
+    }
+
+    void getAllCars() const {
+        cout << "--- All Cars ---" << endl;
+        for (const auto& car : cars) {
+            car->printInfo();
+        }
+    }
+
+    void getAllLadaCars() const {
+        cout << "--- All LADA Cars ---" << endl;
+        for (const auto& car : cars) {
+            if (dynamic_cast<Lada*>(car)) {
+                car->printInfo();
+            }
+        }
+    }
+
+    void getAllBmwCars() const {
+        cout << "--- All BMW Cars ---" << endl;
+        for (const auto& car : cars) {
+            if (dynamic_cast<Bmw*>(car)) {
+                car->printInfo();
+            }
+        }
+    }
+
+    void getAllToyotaCars() const {
+        cout << "--- All Toyota Cars ---" << endl;
+        for (const auto& car : cars) {
+            if (dynamic_cast<Toyota*>(car)) {
+                car->printInfo();
+            }
+        }
+    }
+
+    ~CarGallery() {
+        for (auto car : cars) {
+            delete car;
+        }
+    }
+};
+void main() {
+    CarGallery gallery;
+
+    gallery.addCar(new Lada("LADA", "2107", 120));
+    gallery.addCar(new Lada("LADA", "2106", 110));
+    gallery.addCar(new Bmw("BMW", "M5 CS", 309, 1));
+    gallery.addCar(new Bmw("BMW", "M4 CS", 259, 0));
+    gallery.addCar(new Toyota("Toyota", "Supra MK5", 288, 0));
+    gallery.addCar(new Toyota("Toyota", "Supra MK4", 218, 1));
+
+    gallery.getAllCars();
+    cout << endl;
+    gallery.getAllBmwCars();
+    cout << endl;
+    gallery.getAllLadaCars();
+    cout << endl;
+    gallery.getAllToyotaCars();
+
+}
